@@ -1,43 +1,43 @@
 const express = require('express');
 const app = express();
-// // imporing express module
+// imporing express module
 
-// // from here this sinup and login API
-// // iporing database connection dile
+// from here this sinup and login API
+// iporing database connection dile
 const mysqlConn = require('./databasecon');
 
-// // parse incoming JSON data from HTTP requests
+// parse incoming JSON data from HTTP requests
 app.use(express.json());
 
-// // SignUp
-// app.post('/signup', (req, resp) => {
-//      const data = req.body;
-//      mysqlConn.query('INSERT INTO user SET ?', data, (error, result, fields) => {
-//           if (error) {
-//                resp.send('error');
-//           } else {
-//                resp.send(result);
-//                console.log(result);
-//           }
-//      })
-// });
+// SignUp
+app.post('/signup', (req, resp) => {
+     const data = req.body;
+     mysqlConn.query('INSERT INTO user SET ?', data, (error, result, fields) => {
+          if (error) {
+               resp.send('error');
+          } else {
+               resp.send(result);
+               console.log(result);
+          }
+     })
+});
 
-// // Login
-// app.post('/login', (req, resp) => {
-//      const { Email, Password } = req.body;
+// Login
+app.post('/login', (req, resp) => {
+     const { Email, Password } = req.body;
 
-//      mysqlConn.query('select * from user where Email=? and Password=?', [Email, Password], (error, result, fields) => {
-//           if (error) {
-//                resp.send('Error');
-//           } else {
-//                if (result.length > 0) {
-//                     resp.send('lodin successfull')
-//                } else {
-//                     resp.send('pls enter valid Email and Password')
-//                }
-//           }
-//      })
-// })
+     mysqlConn.query('select * from user where Email=? and Password=?', [Email, Password], (error, result, fields) => {
+          if (error) {
+               resp.send('Error');
+          } else {
+               if (result.length > 0) {
+                    resp.send('lodin successfull')
+               } else {
+                    resp.send('pls enter valid Email and Password')
+               }
+          }
+     })
+})
 
 // Create a new task
 app.post('/tasks', (req, resp) => {
@@ -56,7 +56,7 @@ app.post('/tasks', (req, resp) => {
 
 });
 
-
+// get data from database
 app.get('/getdata/:id', (req, resp) => {
 
      mysqlConn.query('select * from tasks where id=?', [req.params.id], (error, result) => {
@@ -70,6 +70,8 @@ app.get('/getdata/:id', (req, resp) => {
      })
 })
 
+
+// delete APi
 app.delete('/delete/:id', (req, resp) => {
 
      mysqlConn.query('delete  from tasks where id=?', [req.params.id], (error, result) => {
@@ -83,6 +85,8 @@ app.delete('/delete/:id', (req, resp) => {
      })
 })
 
+
+// update API
 app.put('/update', (req, resp) => {
      const data = req.body;
      mysqlConn.query('UPDATE tasks SET ? WHERE id = ?',[ data, data.id ], (err, result) => {
