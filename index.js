@@ -2,115 +2,30 @@ const express = require('express');
 const app = express();
 // imporing express module
 
+// importing coes modules
+const cors = require('cors');
+
 // from here this sinup and login API
 // iporing database connection dile
-const mysqlConn = require('./databasecon');
+// const mysqlConn = require('./config/databasecon');
 
 // parse incoming JSON data from HTTP requests
 app.use(express.json());
 
-// SignUp
-app.post('/signup', (req, resp) => {
-     const data = req.body;
-     mysqlConn.query('INSERT INTO user SET ?', data, (error, result, fields) => {
-          if (error) {
-               resp.send('error');
-          } else {
-               resp.send(result);
-               console.log(result);
-          }
-     })
-});
+// use cors
+app.use(cors());
 
-// Login
-app.post('/login', (req, resp) => {
-     const { Email, Password } = req.body;
-
-     mysqlConn.query('select * from user where Email=? and Password=?', [Email, Password], (error, result, fields) => {
-          if (error) {
-               resp.send('Error');
-          } else {
-               if (result.length > 0) {
-                    resp.send('lodin successfull')
-               } else {
-                    resp.send('pls enter valid Email and Password')
-               }
-          }
-     })
-})
-
-// Create a new task
-app.post('/tasks', (req, resp) => {
-
-     const data = { description, status, doudate } = req.body;
-
-     mysqlConn.query('INSERT INTO tasks SET ?', data, (error, result, fields) => {
-
-          if (error) {
-               resp.send(error);
-          } else {
-               resp.send(result);
-          }
-
-     })
-
-});
-
-// get data from database
-app.get('/getdata/:id', (req, resp) => {
-
-     mysqlConn.query('select * from tasks where id=?', [req.params.id], (error, result) => {
-
-          if (error) {
-               resp.send(error)
-          } else {
-               resp.send(result);
-
-          }
-     })
-})
+// importing routes/router.js file
+const router = require('./routes/router.js');
+app.use('/api', router);
 
 
-// delete APi
-app.delete('/delete/:id', (req, resp) => {
 
-     mysqlConn.query('delete  from tasks where id=?', [req.params.id], (error, result) => {
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+  });
 
-          if (error) {
-               resp.send(error)
-          } else {
-               resp.send(result);
-
-          }
-     })
-})
-
-
-// update API
-app.put('/update', (req, resp) => {
-     const data = req.body;
-     mysqlConn.query('UPDATE tasks SET ? WHERE id = ?',[ data, data.id ], (err, result) => {
-          if (err) {
-               resp.send(err)
-          } else {
-               if (result.affectedRows == 0) {
-                    const data = { description, status, doudate } = req.body;
-
-                    mysqlConn.query('INSERT INTO tasks SET ?', data, (error, result, fields) => {
-
-                         if (error) {
-                              resp.send(error);
-                         } else {
-                              resp.send(result);
-                         }
-                    })
-               } else {
-                    resp.send(result);
-
-               }
-          }
-     })
-})
 // port on that run the project
 app.listen(4000);
 
